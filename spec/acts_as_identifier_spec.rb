@@ -122,6 +122,19 @@ RSpec.describe ActsAsIdentifier do
         it { expect { @model.create(kind: 'foo') }.not_to raise_error }
         it { expect { @model.create }.not_to raise_error }
       end
+
+      context 'with prefix' do
+        before do
+          model = Class.new(ActiveRecord::Base) do
+            self.table_name = 'accounts'
+            acts_as_identifier prefix: 'u-', length: 6
+          end
+          @record = model.create
+        end
+
+        it { expect(@record.identifier).to be_start_with('u-') }
+        it { expect(@record.identifier.length).to eq(8) }
+      end
     end
   end
 end

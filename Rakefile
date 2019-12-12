@@ -16,4 +16,3 @@ RDoc::Task.new(:rdoc) do |rdoc|
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
-require 'bundler/gem_tasks'

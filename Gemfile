@@ -23,3 +23,4 @@ gem 'pry', '~> 0.12.2'
 gem 'rubocop-rspec', '~> 1.37'
 
 gem 'guard-rspec', '~> 4.7'
+gem 'simplecov', '~> 0.17.1'

@@ -1,5 +1,7 @@
 # ActsAsIdentifier
 
+[![Gem Version](https://badge.fury.io/rb/acts_as_identifier.svg)](https://badge.fury.io/rb/acts_as_identifier)
+
 Automatically generate unique secure random string for one or more columns of ActiveRecord.
 
 ## Usage

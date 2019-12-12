@@ -19,7 +19,8 @@ module ActsAsIdentifier
     # @param case_sensitive [Boolean] Case-sensitive? default: true
     # @param max_loop [Integer] max loop count to generate unique identifier, in case of running endless loop, default: 100
     # @param scope [Array<Symbol,String>] scope of identifier, default: []
-    def acts_as_identifier(attr = nil, length: 6, case_sensitive: true, max_loop: 100, scope: [])
+    # @params prefix [String, Symbol] add prefix to value, default: ''
+    def acts_as_identifier(attr = nil, length: 6, case_sensitive: true, max_loop: 100, scope: [], prefix: '')
       attr ||= :identifier
       scope = Array(scope)
       method = case_sensitive ? :alphanumeric : :hex
@@ -30,7 +31,7 @@ module ActsAsIdentifier
         n = 0
         loop do
           n += 1
-          value = send("#{attr}=", SecureRandom.send(method, length))
+          value = send("#{attr}=", "#{prefix}#{SecureRandom.send(method, length)}")
           break unless query.where(attr => value).exists?
           raise LoopTooManyTimesError if n > max_loop
         end
