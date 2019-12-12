@@ -13,22 +13,24 @@ class Account < ActiveRecord::Base
   #
   # Note: without Rails, should include ActsAsIdentifier
   #
-
+  #
   # with default options:
   #           column: :identifier
   #           length: 6
   #   case sensitive: true
   #         max_loop: 100
   #            scope: []
+  #           prefix: ''
+  #
   acts_as_identifier
 
   # extra column
-  acts_as_identifier :slug, length: 8, case_sensitive: false, max_loop: 1000, scope: [:tenant_id]
+  acts_as_identifier :slug, length: 8, case_sensitive: false, max_loop: 1000, scope: [:tenant_id], prefix: 's-'
 end
 # => [Account(id: integer, name: string, tenant_id: string, identifier: string, slug: string)]
 
 Account.create
-# => #<Account:0x00007fcdb90830c0 id: 1, name: nil, tenant_id: nil, identifier: "PWbYHd", slug: "5fabb1e7">
+# => #<Account:0x00007fcdb90830c0 id: 1, name: nil, tenant_id: nil, identifier: "PWbYHd", slug: "s-5fabb1e7">
 
 ```
 
