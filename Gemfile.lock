@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    acts_as_identifier (0.2.0)
+    acts_as_identifier (1.0.0)
 
 GEM
   remote: https://rubygems.org/
@@ -223,4 +223,4 @@ DEPENDENCIES
   sqlite3
 
 BUNDLED WITH
-   2.0.2
+   2.1.2

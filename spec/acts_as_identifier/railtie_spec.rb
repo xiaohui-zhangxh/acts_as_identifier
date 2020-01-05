@@ -2,7 +2,7 @@
 
 require 'rails'
 require 'active_record/railtie'
-require 'acts_as_identifier'
+require 'spec_helper'
 
 RSpec.describe ActsAsIdentifier::Railtie do
   before do

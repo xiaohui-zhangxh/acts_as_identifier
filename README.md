@@ -17,20 +17,19 @@ class Account < ActiveRecord::Base
   # with default options:
   #           column: :identifier
   #           length: 6
-  #   case sensitive: true
-  #         max_loop: 100
-  #            scope: []
   #           prefix: ''
   #
   acts_as_identifier
 
   # extra column
-  acts_as_identifier :slug, length: 8, case_sensitive: false, max_loop: 1000, scope: [:tenant_id], prefix: 's-'
+  acts_as_identifier :slug, length: 6, prefix: 's-'
 end
-# => [Account(id: integer, name: string, tenant_id: string, identifier: string, slug: string)]
+# => [Account(id: integer, name: string, tenant_id: string, slug: string)]
 
 Account.create
-# => #<Account:0x00007fcdb90830c0 id: 1, name: nil, tenant_id: nil, identifier: "PWbYHd", slug: "s-5fabb1e7">
+# => #<Account:0x00007fcdb90830c0 id: 1, name: nil, tenant_id: nil, slug: "s-HuF2Od">
+Account.create
+# => #<Account:0x00007fcdb90830c0 id: 2, name: nil, tenant_id: nil, slug: "s-g3SIB8">
 
 ```
 

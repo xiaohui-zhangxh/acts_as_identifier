@@ -2,6 +2,8 @@
 
 require 'securerandom'
 require 'acts_as_identifier/version'
+require 'acts_as_identifier/xbase_integer'
+require 'acts_as_identifier/encoder'
 
 module ActsAsIdentifier
   LoopTooManyTimesError = Class.new(StandardError)
@@ -12,29 +14,38 @@ module ActsAsIdentifier
 
   module ClassMethods
     #
-    # == Automatically generate unique secure random string
+    # == Automatically generate unique string based on id
     #
     # @param attr [String, Symbol] column name, default: :identifier
     # @param length [Integer] length of identifier, default: 6
-    # @param case_sensitive [Boolean] Case-sensitive? default: true
-    # @param max_loop [Integer] max loop count to generate unique identifier, in case of running endless loop, default: 100
-    # @param scope [Array<Symbol,String>] scope of identifier, default: []
     # @params prefix [String, Symbol] add prefix to value, default: ''
-    def acts_as_identifier(attr = nil, length: 6, case_sensitive: true, max_loop: 100, scope: [], prefix: '')
-      attr ||= :identifier
-      scope = Array(scope)
-      method = case_sensitive ? :alphanumeric : :hex
-      length /= 2 if method == :hex
+    # @params id_column [String, Symbol] column name of id, default: :id
+    # @params chars [Array<String>] chars
+    # @params mappings [Array<String>] mappings must have the same characters as chars
+    def acts_as_identifier(attr = :identifier,
+                           length: 6,
+                           prefix: '',
+                           id_column: :id,
+                           chars: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.chars,
+                           mappings: '3NjncZg82M5fe1PuSABJG9kiRQOqlVa0ybKXYDmtTxCp6Lh7rsIFUWd4vowzHE'.chars)
+      raise 'chars must be an array' unless chars.is_a?(Array)
+      raise 'mappings must be an array' unless chars.is_a?(Array)
+      unless (chars - mappings).empty? && (mappings - chars).empty?
+        raise 'chars and mappings must have the same characters'
+      end
 
-      before_create do
-        query = self.class.unscoped.where(scope.inject({}) { |memo, i| memo.merge(i => send(i)) })
-        n = 0
-        loop do
-          n += 1
-          value = send("#{attr}=", "#{prefix}#{SecureRandom.send(method, length)}")
-          break unless query.where(attr => value).exists?
-          raise LoopTooManyTimesError if n > max_loop
-        end
+      encoder = Encoder.new(chars: chars, mappings: mappings, length: length)
+
+      define_singleton_method "decode_#{attr}" do |str|
+        encoder.decode(str[prefix.length..-1])
+      end
+
+      define_singleton_method "encode_#{attr}" do |num|
+        "#{prefix}#{encoder.encode(num)}"
+      end
+
+      after_create_commit do |record|
+        record.update_column attr, self.class.send("encode_#{attr}", record.send(id_column))
       end
     end
   end

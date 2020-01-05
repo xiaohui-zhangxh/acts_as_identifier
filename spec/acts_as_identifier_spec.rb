@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'acts_as_identifier'
+require 'spec_helper'
 require 'active_record'
 
 ActiveRecord::Base.include ActsAsIdentifier
@@ -19,7 +19,7 @@ def setup_active_record
       t.string :kind
       t.string :group
       t.string :identifier
-      t.string :str1
+      t.string :slug
       t.string :str2
     end
   end
@@ -51,6 +51,14 @@ RSpec.describe ActsAsIdentifier do
       it 'default identifier length should be 6' do
         expect(@model.create.identifier.length).to eq 6
       end
+
+      it { expect(@model.encode_identifier(1)).to eq 'HuF2Od' }
+      it { expect(@model.encode_identifier(2)).to eq 'g3SIB8' }
+
+      it do
+        record = @model.create
+        expect(@model.decode_identifier(record.identifier)).to eq record.id
+      end
     end
 
     context 'with length = 10' do
@@ -60,7 +68,6 @@ RSpec.describe ActsAsIdentifier do
           acts_as_identifier length: 10
         end
       end
-
       it { expect(@model.create.identifier.length).to eq 10 }
     end
 
@@ -69,71 +76,31 @@ RSpec.describe ActsAsIdentifier do
         model = Class.new(ActiveRecord::Base) do
           self.table_name = 'accounts'
           acts_as_identifier length: 10
-          acts_as_identifier :str1, length: 6
-          acts_as_identifier :str2, length: 8, case_sensitive: false
+          acts_as_identifier :slug, length: 6
+          acts_as_identifier :str2, length: 8
         end
         @record = model.create
       end
 
       it { expect(@record.identifier.length).to eq 10 }
-      it { expect(@record.str1.length).to eq 6 }
+      it { expect(@record.slug.length).to eq 6 }
       it { expect(@record.str2.length).to eq 8 }
+      it { expect(@record.class.decode_identifier(@record.identifier)).to eq @record.id }
     end
 
     context do
-      before do
-        allow(SecureRandom).to receive(:alphanumeric).and_return('AbC123')
-        allow(SecureRandom).to receive(:hex).and_return('abc123')
-      end
-
-      context 'when case sensitive' do
-        before do
-          model = Class.new(ActiveRecord::Base) do
-            self.table_name = 'accounts'
-            acts_as_identifier case_sensitive: true
-          end
-          @record = model.create
-        end
-        it { expect(@record.identifier).to eq 'AbC123' }
-      end
-
-      context 'when case insensitive' do
-        before do
-          model = Class.new(ActiveRecord::Base) do
-            self.table_name = 'accounts'
-            acts_as_identifier case_sensitive: false
-          end
-          @record = model.create
-        end
-        it { expect(@record.identifier).to eq 'abc123' }
-      end
-
-      context 'with uniqueness' do
-        before do
-          @model = Class.new(ActiveRecord::Base) do
-            self.table_name = 'accounts'
-            acts_as_identifier case_sensitive: false, scope: %i[kind group], max_loop: 3
-          end
-          @model.create(kind: 'foo', group: 'bar')
-        end
-
-        it { expect { @model.create(kind: 'foo', group: 'bar') }.to raise_error(ActsAsIdentifier::LoopTooManyTimesError) }
-
-        it { expect { @model.create(kind: 'foo') }.not_to raise_error }
-        it { expect { @model.create }.not_to raise_error }
-      end
-
       context 'with prefix' do
         before do
           model = Class.new(ActiveRecord::Base) do
             self.table_name = 'accounts'
-            acts_as_identifier prefix: 'u-', length: 6
+            acts_as_identifier :slug, prefix: 'u-', length: 6
           end
           @record = model.create
         end
 
-        it { expect(@record.identifier).to be_start_with('u-') }
-        it { expect(@record.identifier.length).to eq(8) }
+        it { expect(@record.slug).to be_start_with('u-') }
+        it { expect(@record.slug.length).to eq(8) }
+        it { expect(@record.class.decode_slug(@record.slug)).to eq @record.id }
       end
     end
   end

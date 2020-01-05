@@ -3,6 +3,7 @@
 ENV['RAILS_ENV'] = 'test'
 require 'simplecov'
 SimpleCov.start
+require 'acts_as_identifier'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
