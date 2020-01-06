@@ -29,7 +29,7 @@ module ActsAsIdentifier
                            chars: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.chars,
                            mappings: '3NjncZg82M5fe1PuSABJG9kiRQOqlVa0ybKXYDmtTxCp6Lh7rsIFUWd4vowzHE'.chars)
       raise 'chars must be an array' unless chars.is_a?(Array)
-      raise 'mappings must be an array' unless chars.is_a?(Array)
+      raise 'mappings must be an array' unless mappings.is_a?(Array)
       unless (chars - mappings).empty? && (mappings - chars).empty?
         raise 'chars and mappings must have the same characters'
       end
@@ -44,8 +44,10 @@ module ActsAsIdentifier
         "#{prefix}#{encoder.encode(num)}"
       end
 
-      after_create_commit do |record|
-        record.update_column attr, self.class.send("encode_#{attr}", record.send(id_column))
+      before_commit do |record|
+        if record.previous_changes.key?(id_column.to_s)
+          record.update_column attr, self.class.send("encode_#{attr}", record.send(id_column))
+        end
       end
     end
   end

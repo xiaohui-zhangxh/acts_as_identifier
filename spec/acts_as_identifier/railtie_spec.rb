@@ -1,7 +1,4 @@
 # frozen_string_literal: true
-
-require 'rails'
-require 'active_record/railtie'
 require 'spec_helper'
 
 RSpec.describe ActsAsIdentifier::Railtie do

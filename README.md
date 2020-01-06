@@ -6,22 +6,22 @@ Automatically generate unique secure random string for one or more columns of Ac
 
 ## Usage
 
-> `ActsAsIdentifier` only generate identifier `before create`
+> `ActsAsIdentifier` only generate identifier `after_create_commit`
 
 ```ruby
 class Account < ActiveRecord::Base
   #
   # Note: without Rails, should include ActsAsIdentifier
   #
-  #
-  # with default options:
-  #           column: :identifier
-  #           length: 6
-  #           prefix: ''
+  # def acts_as_identifier(attr = :identifier,
+  #                            length: 6,
+  #                            prefix: '',
+  #                            id_column: :id,
+  #                            chars: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.chars,
+  #                            mappings: '3NjncZg82M5fe1PuSABJG9kiRQOqlVa0ybKXYDmtTxCp6Lh7rsIFUWd4vowzHE'.chars)
   #
   acts_as_identifier
-
-  # extra column
+  # or customize options:
   acts_as_identifier :slug, length: 6, prefix: 's-'
 end
 # => [Account(id: integer, name: string, tenant_id: string, slug: string)]

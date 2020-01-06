@@ -36,6 +36,33 @@ RSpec.describe ActsAsIdentifier do
   context 'with active record' do
     before { setup_active_record }
 
+    it do
+      expect {
+        model = Class.new(ActiveRecord::Base) do
+          self.table_name = 'accounts'
+          acts_as_identifier chars: '0123'.chars, mappings: '01234'.chars
+        end
+      }.to raise_error /chars and mappings must have the same characters/
+    end
+
+    it do
+      expect {
+        model = Class.new(ActiveRecord::Base) do
+          self.table_name = 'accounts'
+          acts_as_identifier chars: '0123'
+        end
+      }.to raise_error /chars must be an array/
+    end
+
+    it do
+      expect {
+        model = Class.new(ActiveRecord::Base) do
+          self.table_name = 'accounts'
+          acts_as_identifier mappings: '0123'
+        end
+      }.to raise_error /mappings must be an array/
+    end
+
     context 'with default option' do
       before do
         @model = Class.new(ActiveRecord::Base) do
@@ -58,6 +85,15 @@ RSpec.describe ActsAsIdentifier do
       it do
         record = @model.create
         expect(@model.decode_identifier(record.identifier)).to eq record.id
+      end
+
+      it do
+        record = @model.create(id: 1)
+        expect(record.identifier).to eq 'HuF2Od'
+        record.update id: 2
+        expect(record.identifier).to eq 'g3SIB8'
+        record.update name: 'hello'
+        expect(record.identifier).to eq 'g3SIB8'
       end
     end
 
