@@ -42,5 +42,10 @@ bundle add acts_as_identifier
 ## Contributing
 Contribution directions go here.
 
-## License
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+## Testing
+
+```shell
+bundle exec rspec
+# or test specific range
+EXTRA_TEST=100000,1000000 bundle exec rspec
+```
