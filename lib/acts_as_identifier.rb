@@ -45,7 +45,7 @@ module ActsAsIdentifier
       end
 
       before_commit do |record|
-        if record.previous_changes.key?(id_column.to_s)
+        if record.previous_changes.key?(id_column.to_s) && !record.destroyed?
           record.update_column attr, self.class.send("encode_#{attr}", record.send(id_column))
         end
       end

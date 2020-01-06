@@ -95,6 +95,11 @@ RSpec.describe ActsAsIdentifier do
         record.update name: 'hello'
         expect(record.identifier).to eq 'g3SIB8'
       end
+
+      it do
+        record = @model.create
+        expect{ record.destroy }.not_to raise_error
+      end
     end
 
     context 'with length = 10' do
@@ -124,20 +129,18 @@ RSpec.describe ActsAsIdentifier do
       it { expect(@record.class.decode_identifier(@record.identifier)).to eq @record.id }
     end
 
-    context do
-      context 'with prefix' do
-        before do
-          model = Class.new(ActiveRecord::Base) do
-            self.table_name = 'accounts'
-            acts_as_identifier :slug, prefix: 'u-', length: 6
-          end
-          @record = model.create
+    context 'with prefix' do
+      before do
+        model = Class.new(ActiveRecord::Base) do
+          self.table_name = 'accounts'
+          acts_as_identifier :slug, prefix: 'u-', length: 6
         end
-
-        it { expect(@record.slug).to be_start_with('u-') }
-        it { expect(@record.slug.length).to eq(8) }
-        it { expect(@record.class.decode_slug(@record.slug)).to eq @record.id }
+        @record = model.create
       end
+
+      it { expect(@record.slug).to be_start_with('u-') }
+      it { expect(@record.slug.length).to eq(8) }
+      it { expect(@record.class.decode_slug(@record.slug)).to eq @record.id }
     end
   end
 end
