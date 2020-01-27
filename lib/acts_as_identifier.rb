@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
-require 'securerandom'
 require 'acts_as_identifier/version'
-require 'acts_as_identifier/xbase_integer'
-require 'acts_as_identifier/encoder'
+require 'xencoder'
 
 module ActsAsIdentifier
-  LoopTooManyTimesError = Class.new(StandardError)
 
   def self.included(base)
     base.extend ClassMethods
@@ -23,25 +20,24 @@ module ActsAsIdentifier
     # @params chars [Array<String>] chars
     # @params mappings [Array<String>] mappings must have the same characters as chars
     def acts_as_identifier(attr = :identifier,
+                           seed: 1,
                            length: 6,
                            prefix: '',
                            id_column: :id,
-                           chars: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.chars,
-                           mappings: '3NjncZg82M5fe1PuSABJG9kiRQOqlVa0ybKXYDmtTxCp6Lh7rsIFUWd4vowzHE'.chars)
-      raise 'chars must be an array' unless chars.is_a?(Array)
-      raise 'mappings must be an array' unless mappings.is_a?(Array)
-      unless (chars - mappings).empty? && (mappings - chars).empty?
-        raise 'chars and mappings must have the same characters'
+                           chars: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+      define_singleton_method "#{attr}_encoder" do
+        vname = "@#{attr}_encoder"
+        return instance_variable_get(vname) if instance_variable_defined?(vname)
+
+        instance_variable_set(vname, Xencoder.new(chars, length: length, seed: seed))
       end
 
-      encoder = Encoder.new(chars: chars, mappings: mappings, length: length)
-
       define_singleton_method "decode_#{attr}" do |str|
-        encoder.decode(str[prefix.length..-1])
+        send("#{attr}_encoder").decode(str[prefix.length..-1])
       end
 
       define_singleton_method "encode_#{attr}" do |num|
-        "#{prefix}#{encoder.encode(num)}"
+        "#{prefix}#{send("#{attr}_encoder").encode(num)}"
       end
 
       before_commit do |record|
@@ -52,5 +48,3 @@ module ActsAsIdentifier
     end
   end
 end
-
-require 'acts_as_identifier/railtie' if defined?(Rails)

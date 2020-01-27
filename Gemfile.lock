@@ -1,7 +1,8 @@
 PATH
   remote: .
   specs:
-    acts_as_identifier (1.0.0)
+    acts_as_identifier (1.1.0)
+      xencoder (~> 0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -207,6 +208,7 @@ GEM
     websocket-driver (0.7.1)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.4)
+    xencoder (0.1.0)
     zeitwerk (2.2.2)
 
 PLATFORMS

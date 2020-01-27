@@ -3,8 +3,6 @@
 ENV['RAILS_ENV'] = 'test'
 require 'simplecov'
 SimpleCov.start
-require 'rails'
-require 'active_record/railtie'
 require 'acts_as_identifier'
 
 RSpec.configure do |config|

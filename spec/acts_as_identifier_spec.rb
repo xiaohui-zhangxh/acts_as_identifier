@@ -3,8 +3,6 @@
 require 'spec_helper'
 require 'active_record'
 
-ActiveRecord::Base.include ActsAsIdentifier
-
 def setup_active_record
   db_path = File.expand_path('db/test.sqlite3', __dir__)
   File.delete(db_path) if File.exist?(db_path)
@@ -26,7 +24,6 @@ def setup_active_record
 end
 
 RSpec.describe ActsAsIdentifier do
-  it { expect(described_class).to be_const_defined :LoopTooManyTimesError }
   it do
     klass = Class.new
     klass.send :include, described_class
@@ -36,36 +33,10 @@ RSpec.describe ActsAsIdentifier do
   context 'with active record' do
     before { setup_active_record }
 
-    it do
-      expect {
-        model = Class.new(ActiveRecord::Base) do
-          self.table_name = 'accounts'
-          acts_as_identifier chars: '0123'.chars, mappings: '01234'.chars
-        end
-      }.to raise_error /chars and mappings must have the same characters/
-    end
-
-    it do
-      expect {
-        model = Class.new(ActiveRecord::Base) do
-          self.table_name = 'accounts'
-          acts_as_identifier chars: '0123'
-        end
-      }.to raise_error /chars must be an array/
-    end
-
-    it do
-      expect {
-        model = Class.new(ActiveRecord::Base) do
-          self.table_name = 'accounts'
-          acts_as_identifier mappings: '0123'
-        end
-      }.to raise_error /mappings must be an array/
-    end
-
     context 'with default option' do
       before do
         @model = Class.new(ActiveRecord::Base) do
+          include ActsAsIdentifier
           self.table_name = 'accounts'
           acts_as_identifier
         end
@@ -79,8 +50,8 @@ RSpec.describe ActsAsIdentifier do
         expect(@model.create.identifier.length).to eq 6
       end
 
-      it { expect(@model.encode_identifier(1)).to eq 'HuF2Od' }
-      it { expect(@model.encode_identifier(2)).to eq 'g3SIB8' }
+      it { expect(@model.encode_identifier(1)).to eq 'EPaPaP' }
+      it { expect(@model.encode_identifier(2)).to eq 'HSo0u4' }
 
       it do
         record = @model.create
@@ -89,22 +60,23 @@ RSpec.describe ActsAsIdentifier do
 
       it do
         record = @model.create(id: 1)
-        expect(record.identifier).to eq 'HuF2Od'
+        expect(record.identifier).to eq 'EPaPaP'
         record.update id: 2
-        expect(record.identifier).to eq 'g3SIB8'
+        expect(record.identifier).to eq 'HSo0u4'
         record.update name: 'hello'
-        expect(record.identifier).to eq 'g3SIB8'
+        expect(record.identifier).to eq 'HSo0u4'
       end
 
       it do
         record = @model.create
-        expect{ record.destroy }.not_to raise_error
+        expect { record.destroy }.not_to raise_error
       end
     end
 
     context 'with length = 10' do
       before do
         @model = Class.new(ActiveRecord::Base) do
+          include ActsAsIdentifier
           self.table_name = 'accounts'
           acts_as_identifier length: 10
         end
@@ -115,16 +87,17 @@ RSpec.describe ActsAsIdentifier do
     context 'with multiple identifier' do
       before do
         model = Class.new(ActiveRecord::Base) do
+          include ActsAsIdentifier
           self.table_name = 'accounts'
-          acts_as_identifier length: 10
-          acts_as_identifier :slug, length: 6
+          acts_as_identifier length: 11
+          acts_as_identifier :slug, length: 5
           acts_as_identifier :str2, length: 8
         end
         @record = model.create
       end
 
-      it { expect(@record.identifier.length).to eq 10 }
-      it { expect(@record.slug.length).to eq 6 }
+      it { expect(@record.identifier.length).to eq 11 }
+      it { expect(@record.slug.length).to eq 5 }
       it { expect(@record.str2.length).to eq 8 }
       it { expect(@record.class.decode_identifier(@record.identifier)).to eq @record.id }
     end
@@ -132,6 +105,7 @@ RSpec.describe ActsAsIdentifier do
     context 'with prefix' do
       before do
         model = Class.new(ActiveRecord::Base) do
+          include ActsAsIdentifier
           self.table_name = 'accounts'
           acts_as_identifier :slug, prefix: 'u-', length: 6
         end
