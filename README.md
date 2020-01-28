@@ -14,12 +14,12 @@ class Account < ActiveRecord::Base
   #
   # == default options
   #
-  # def acts_as_identifier(attr = :identifier,
-  #                             seed: 1,
-  #                           length: 6,
-  #                           prefix: '',
-  #                        id_column: :id,
-  #                            chars: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+  #      attr: :identifier,
+  #      seed: 1,
+  #    length: 6,
+  #    prefix: nil,
+  # id_column: :id,
+  #     chars: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
   #
   acts_as_identifier
   # or customize options:

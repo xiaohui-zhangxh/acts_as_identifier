@@ -14,15 +14,15 @@ module ActsAsIdentifier
     # == Automatically generate unique string based on id
     #
     # @param attr [String, Symbol] column name, default: :identifier
+    # @param seed [Integer] Random seed, default: 1
     # @param length [Integer] length of identifier, default: 6
-    # @params prefix [String, Symbol] add prefix to value, default: ''
+    # @params prefix [String, Symbol] add prefix to value, default: nil
     # @params id_column [String, Symbol] column name of id, default: :id
-    # @params chars [Array<String>] chars
-    # @params mappings [Array<String>] mappings must have the same characters as chars
+    # @params chars [String] chars for generating identifier
     def acts_as_identifier(attr = :identifier,
                            seed: 1,
                            length: 6,
-                           prefix: '',
+                           prefix: nil,
                            id_column: :id,
                            chars: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
       define_singleton_method "#{attr}_encoder" do
