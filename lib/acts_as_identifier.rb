@@ -33,7 +33,11 @@ module ActsAsIdentifier
       end
 
       define_singleton_method "decode_#{attr}" do |str|
-        send("#{attr}_encoder").decode(str[prefix.length..-1])
+        if prefix
+          return nil unless str.to_s.start_with?(prefix)
+          str = str[prefix.length..-1]
+        end
+        str && send("#{attr}_encoder").decode(str)
       end
 
       define_singleton_method "encode_#{attr}" do |num|

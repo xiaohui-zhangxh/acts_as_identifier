@@ -115,6 +115,7 @@ RSpec.describe ActsAsIdentifier do
       it { expect(@record.slug).to be_start_with('u-') }
       it { expect(@record.slug.length).to eq(8) }
       it { expect(@record.class.decode_slug(@record.slug)).to eq @record.id }
+      it { expect(@record.class.decode_slug('abc')).to be_nil }
     end
   end
 end
