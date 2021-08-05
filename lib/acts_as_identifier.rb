@@ -44,11 +44,13 @@ module ActsAsIdentifier
         "#{prefix}#{send("#{attr}_encoder").encode(num)}"
       end
 
-      before_commit do |record|
-        if record.previous_changes.key?(id_column.to_s) && !record.destroyed?
-          record.update_column attr, self.class.send("encode_#{attr}", record.send(id_column))
+      define_method "update_#{attr}_before_commit" do
+        if previous_changes.key?(id_column.to_s) && !destroyed?
+          update_column attr, self.class.send("encode_#{attr}", send(id_column))
         end
       end
+
+      before_commit :"update_#{attr}_before_commit"
     end
   end
 end
