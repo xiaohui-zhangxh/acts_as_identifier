@@ -44,6 +44,14 @@ module ActsAsIdentifier
         "#{prefix}#{send("#{attr}_encoder").encode(num)}"
       end
 
+      define_singleton_method "find_by_decoded_#{attr}" do |str|
+        find_by(id_column => public_send("decode_#{attr}", str))
+      end
+
+      define_singleton_method "find_by_decoded_#{attr}!" do |str|
+        find_by!(id_column => public_send("decode_#{attr}", str))
+      end
+
       define_method "acts_as_identifier__update_#{attr}" do
         update_column attr, self.class.send("encode_#{attr}", send(id_column))
       end

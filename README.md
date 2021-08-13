@@ -31,8 +31,15 @@ Account.create
 # => #<Account:0x00007fcdb90830c0 id: 1, name: nil, tenant_id: nil, slug: "s-EPaPaP">
 Account.create
 # => #<Account:0x00007fcdb90830c0 id: 2, name: nil, tenant_id: nil, slug: "s-HSo0u4">
-
 ```
+
+## Features
+
+- *`ActiveRecord`*.find_by_decoded_*`identifier`*('s-EPaPaP') => Actually find by id, id is decoded from identifier, with this method you don't need to add extra index for *`identifier`*
+- *`ActiveRecord`*.find_by_decoded_*`identifier`*!('s-EPaPaP') => equal to find_by_xx!
+- *`ActiveRecord`*.*decode_`identifier`*('s-EPaPaP') => decode identifier to id
+- *`ActiveRecord`*.*encode_`identifier`*(1) => encode id to identifier
+- *`ActiveRecord`*.*`identifier`*_encoder => encoder instance, see [xencoder](https://github.com/xiaohui-zhangxh/xencoder)
 
 ## Installation
 

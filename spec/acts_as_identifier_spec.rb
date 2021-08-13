@@ -100,6 +100,7 @@ RSpec.describe ActsAsIdentifier do
       it { expect(@record.slug.length).to eq 5 }
       it { expect(@record.str2.length).to eq 8 }
       it { expect(@record.class.decode_identifier(@record.identifier)).to eq @record.id }
+      it { expect(@record.class.find_by_decoded_identifier(@record.identifier)).to eq @record }
     end
 
     context 'with prefix' do
@@ -115,6 +116,7 @@ RSpec.describe ActsAsIdentifier do
       it { expect(@record.slug).to be_start_with('u-') }
       it { expect(@record.slug.length).to eq(8) }
       it { expect(@record.class.decode_slug(@record.slug)).to eq @record.id }
+      it { expect(@record.class.find_by_decoded_slug(@record.slug)).to eq @record }
       it { expect(@record.class.decode_slug('abc')).to be_nil }
     end
   end
