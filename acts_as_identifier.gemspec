@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir['{lib}/**/*', 'MIT-LICENSE', 'README.md']
 
-  spec.add_dependency 'xencoder', '~> 0.1.0'
-  spec.add_development_dependency 'rails', '~> 6.0.1'
+  spec.add_dependency 'xencoder', '~> 0.2.0'
+  spec.add_development_dependency 'rails', '~> 7.0.1'
   spec.add_development_dependency 'sqlite3'
 end
