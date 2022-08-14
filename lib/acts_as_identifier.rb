@@ -56,7 +56,7 @@ module ActsAsIdentifier
         update_column attr, self.class.send("encode_#{attr}", send(id_column))
       end
 
-      before_commit :"acts_as_identifier__update_#{attr}", if: -> { previous_changes.key?(id_column.to_s) && !destroyed? }
+      after_save :"acts_as_identifier__update_#{attr}", if: -> { previous_changes.key?(id_column.to_s) && !destroyed? }
     end
   end
 end
